@@ -1,5 +1,16 @@
-apiKey = 'AIzaSyA1HfqmvNY_qRHR_aV1JxDDcXKlQMWxuAo'
+from __future__ import print_function
 import math
+from quickstart import main
+import datetime
+import pickle
+import os.path
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+
+
+apiKey = 'AIzaSyA1HfqmvNY_qRHR_aV1JxDDcXKlQMWxuAo'
+
 def get_lat_lng(apiKey, address):
 
     import requests
@@ -16,16 +27,6 @@ def get_lat_lng(apiKey, address):
         lng = 0
     return lat, lng
 
-# if __name__ == '__main__':
-#     # get ke
-#
-#     # get coordinates
-#     address = '1 Rocket Road, Hawthorne, CA'
-#     lat, lng = get_lat_lng(apiKey, address)
-#     print(lat, lng)
-# AIzaSyA1HfqmvNY_qRHR_aV1JxDDcXKlQMWxuAo
-
-
 def get_drive_time(apiKey,arr,mode): # mode = walking, driving, bicycling, transit
     # car = 0.525 kg per hour
     # bus = 0.822 g per km
@@ -38,13 +39,12 @@ def get_drive_time(apiKey,arr,mode): # mode = walking, driving, bicycling, trans
         url = ('https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins={}&destinations={}&mode={}&key={}'
                .format(origin.replace(' ','+'),
                        destination.replace(' ','+'),mode,
-                       apiKey
+                       str(apiKey)
                        )
                )
         try:
             response = requests.get(url)
             resp_json_payload = response.json()
-            print(resp_json_payload)
             time += math.ceil(resp_json_payload['rows'][0]['elements'][0]['duration']['value'])
         except:
             print('ERROR: {}, {}'.format(origin, destination))
@@ -54,11 +54,9 @@ def get_drive_time(apiKey,arr,mode): # mode = walking, driving, bicycling, trans
 
 if __name__ == '__main__':
     # get coordinates
-    origin = 'Buckhingham Palace, UK'
-    destination = 'Queens College, University of Cambridge, Cambridge CB3 9ET, UK'
-    arr = [origin,destination]
+    arr = main()
+    print(arr)
     drive_time = get_drive_time(apiKey, arr,'transit')
-    print('Origin: {}\nDestination: {}\nDrive Time:  {} min'.format(origin, destination, drive_time/60))
+    print(drive_time)
     # optimization_criteria = drive_time*carbon_footprint
 
-# def getTimesforeachroute(arr):
