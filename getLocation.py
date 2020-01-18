@@ -36,15 +36,23 @@ def get_drive_time(apiKey,arr,mode): # mode = walking, driving, bicycling, trans
     for i in range(len(arr)-1):
         origin = arr[i]
         destination = arr[i+1]
-        url = ('https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins={}&destinations={}&mode={}&key={}'
+        # url = ('https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origin={}&destination={}&mode={}&key={}'
+        #         #        .format(origin.replace(' ','+'),
+        #         #                destination.replace(' ','+'),mode,
+        #         #                str(apiKey)
+        #         #                )
+        #         #        )
+        url = ('https://maps.googleapis.com/maps/api/directions/json?units=imperial&origin={}&destination={}&mode={}&key={}'
                .format(origin.replace(' ','+'),
                        destination.replace(' ','+'),mode,
                        str(apiKey)
                        )
                )
+        print(url)
         try:
             response = requests.get(url)
             resp_json_payload = response.json()
+            print(resp_json_payload['routes'][0]['legs'])
             time += math.ceil(resp_json_payload['rows'][0]['elements'][0]['duration']['value'])
         except:
             print('ERROR: {}, {}'.format(origin, destination))
