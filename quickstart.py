@@ -40,7 +40,7 @@ def main():
 
     # Call the Calendar API
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    endDay = datetime.datetime(today.year, today.month, today.day, 23, 59,0,0).isoformat() + 'Z'
+    endDay = datetime.datetime(today.year, today.month, today.day+1, 23, 59,0,0).isoformat() + 'Z'
     events_result = service.events().list(calendarId='primary', timeMin=now,
                                         timeMax = endDay, singleEvents=True,
                                         orderBy='startTime').execute()
@@ -49,7 +49,10 @@ def main():
     if not events:
         print('No upcoming events found.')
     for event in events:
-        location_list.append(event['location'])
+        try:
+            location_list.append(event['location'])
+        except:
+            print("e")
     
     return location_list
 
