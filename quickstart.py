@@ -5,25 +5,14 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-import json,ast
-# from dateutil import tz
+from dateutil import tz
 
 # If modifying these scopes, delete the file token.pickle.
+SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
-
+location_list = []
 
 def main():
-    import geocoder
-    from geopy.geocoders import Nominatim
-    geolocator = Nominatim(user_agent="Test_App")
-    SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
-
-    location_list = []
-    g = geocoder.ip('me')
-    latlong = g.latlng
-    location = geolocator.reverse(latlong)
-    location_list.append(str(location.address))
-
     today = datetime.date.today()
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
@@ -51,16 +40,21 @@ def main():
 
     # Call the Calendar API
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    endDay = datetime.datetime(today.year, today.month, today.day, 23, 59,0,0).isoformat() + 'Z'
+    endDay = datetime.datetime(today.year, today.month, today.day+1, 23, 59,0,0).isoformat() + 'Z'
     events_result = service.events().list(calendarId='primary', timeMin=now,
                                         timeMax = endDay, singleEvents=True,
                                         orderBy='startTime').execute()
     events = events_result.get('items', [])
+
     if not events:
         print('No upcoming events found.')
     for event in events:
-        event = ast.literal_eval(json.dumps(event['location']))
-        event2 = event.replace('\\u2019', '')
-        location_list.append(event2)
-
+        try:
+            location_list.append(event['location'])
+        except:
+            print("e")
+    
     return location_list
+
+if __name__ == '__main__':
+    print(main())
