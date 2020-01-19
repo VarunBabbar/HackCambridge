@@ -10,7 +10,6 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
-os.chdir("/Users/varunbabbar/PycharmProjects/HackCambridge/HackCambridge/")
 apiKey = 'AIzaSyA1HfqmvNY_qRHR_aV1JxDDcXKlQMWxuAo'
 
 #emissions per second (kg per km)
