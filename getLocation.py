@@ -27,7 +27,7 @@ INTERCITY_BUS = 0.8
 TROLLEYBUS = 10.1
 FERRY = 4.5
 
-def get_lat_lng(apiKey, address):
+def get_lat_lng(address):
 
     import requests
     url = ('https://maps.googleapis.com/maps/api/geocode/json?address={}&key={}'
@@ -77,12 +77,22 @@ def get_travel_time(apiKey,origin,destination,mode_selected): # mode = walking, 
 def leg_travel_time(location_list):
     trips_today = {}
     for i in range(0,len(location_list)-1):
-        origin = location_list[i]
-        destination = location_list[i+1]
-        mode_time = get_travel_time(apiKey, origin, destination, mode_selected = 'transit')
+        origin_address = location_list[i]
+        origin_lat,origin_lng = get_lat_lng(origin_address)
+        destination_address = location_list[i+1]
+        destination_lat,destination_lng = get_lat_lng(destination_address)
+        mode_time = get_travel_time(apiKey, origin_address, destination_address, mode_selected = 'transit')
         trips_today[i+1] = {
-            "origin": origin,
-            "destination": destination,
+            "origin": {
+                "addresss": origin_address,
+                "lat": origin_lat,
+                "lng": origin_lng
+                },
+            "destination": {
+                "address": destination_address,
+                "lat": destination_lat,
+                "lng": destination_lng,
+                },
             "mode_time": mode_time
         }
     return trips_today
@@ -157,6 +167,8 @@ def getCo2emissions(legs):
 if __name__ == '__main__':
     # get coordinates
     location_list = fetch_calendar()
+    lat,lng = get_lat_lng(location_list[0])
+    print(lat,lng)
     legs = getCo2emissions(leg_travel_time(location_list))
     for leg in legs:
         print(leg,legs[leg])
