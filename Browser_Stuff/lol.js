@@ -1,5 +1,5 @@
-const { exec } = require("child_process");
-exec("python /Users/varunbabbar/PycharmProjects/HackCambridge/HackCambridge/getLocation.py", (error, stdout, stderr) => {
+import { exec } from "child_process";
+exec("python ./getLocation.py", (error, stdout, stderr) => {
     if (error) {
         console.log(`error: ${error.message}`);
         return;
