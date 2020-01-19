@@ -206,36 +206,52 @@ def efficiency_scorer():
 
     return walktime,drivetime,driveco2,cycletime,totaltime,totalco2
 
-
+f = open('ResultMetrics.txt',"w+")
     # optimization_criteria = drive_time*carbon_footprint
 walktime,drivetime,driveco2,cycletime,totaltime,totalco2 = efficiency_scorer()
 if walktime != 10**6:
     print("Total Time Spent if only Walking (hours) = " + str(walktime/3600))
+    f.write("Total Time Spent if only Walking (hours) = " + str(walktime/3600)+ '\r\n')
 if cycletime != 10**6:
     print("Total Time Spent if only Cycling (hours) = " + str(cycletime/3600))
+    f.write("Total Time Spent if only Cycling (hours) = " + str(cycletime/3600)+ '\r\n')
 print("Total Time Spent if only Driving (hours) = " + str(drivetime/3600))
+f.write("Total Time Spent if only Driving (hours) = " + str(drivetime/3600)+ '\r\n')
 print("Total CO2 emitted for only Driving (kg) = " + str(driveco2))
+f.write("Total CO2 emitted for only Driving (kg) = " + str(driveco2) + '\r\n')
+f.write("")
+f.write("")
+
 print("")
 print("")
 
 print("Total Time Taken if transit option taken (hours) = " + str(totaltime/3600))
+f.write("Total Time Taken if transit option taken (hours) = " + str(totaltime/3600)+ '\r\n')
 print("Total CO2 Emitted if transit option taken (kg) = " + str(totalco2))
-
+f.write("Total CO2 Emitted if transit option taken (hours) = " + str(totalco2)+ '\r\n')
+f.write("")
+f.write("")
+f.write("")
 print("")
 print("")
 print("")
 if walktime != 10**6:
     print("Efficiency Metric for Only Walking: " + str(1000000000/(driveco2*walktime)))
+    f.write("Efficiency Metric for Only Walking:" + str(1000000000/(driveco2*walktime)) + '\r\n')
 else:
     print("Efficiency Metric for Only Walking: 0")
+    f.write("Efficiency Metric for Only Walking: 0")
 if cycletime != 10**6:
-    print("Efficiency Metric for Only Cycling: " + str(1000000000/(driveco2*cycletime)))
+    f.write("Efficiency Metric for Only Cycling: " + str(1000000000/(driveco2*cycletime))+ '\r\n')
 else:
     print("Efficiency Metric for Only Cycling: 0")
-
+    f.write("Efficiency Metric for Only Cycling: 0")
 
 print("Efficiency Metric for Only Driving: " + str(1000000000/(driveco2*drivetime)))
+f.write("Efficiency Metric for Only Driving: " + str(1000000000/(driveco2*drivetime))+ '\r\n')
 if totalco2 != 0:
     print("Efficiency Metric for Transit: " + str(1000000000/(totaltime*totalco2)))
+    f.write("Efficiency Metric for Transit: " + str(1000000000/(totaltime*totalco2))+ '\r\n')
 else:
     print("Efficiency Metric for Transit: " + str(1000000000/(totaltime*driveco2)))
+    f.write("Efficiency Metric for Transit: " + str(1000000000/(totaltime*driveco2))+ '\r\n')
