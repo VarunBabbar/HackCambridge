@@ -1,6 +1,7 @@
 from __future__ import print_function
 import math
-from quickstart import main
+from quickstart import fetch_calendar
+from json_parse import json_write
 import datetime
 import pickle
 import os.path
@@ -11,6 +12,7 @@ from google.auth.transport.requests import Request
 
 apiKey = 'AIzaSyA1HfqmvNY_qRHR_aV1JxDDcXKlQMWxuAo'
 
+#emissions per second
 RAIL = 2
 METRO_RAIL = 3
 SUBWAY = 1
@@ -161,10 +163,12 @@ def getCo2emissions(legs):
 
 if __name__ == '__main__':
     # get coordinates
-    location_list = main()
+    location_list = fetch_calendar()
     legs = getCo2emissions(leg_travel_time(location_list))
     for leg in legs:
         print(leg,legs[leg])
-    arr = main()
+    arr = fetch_calendar()
+    json_write(legs)
+
     # optimization_criteria = drive_time*carbon_footprint
 

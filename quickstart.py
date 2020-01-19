@@ -5,14 +5,13 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-from dateutil import tz
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
 location_list = []
 
-def main():
+def fetch_calendar():
     today = datetime.date.today()
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
@@ -57,4 +56,4 @@ def main():
     return location_list
 
 if __name__ == '__main__':
-    print(main())
+    print(fetch_calendar())
