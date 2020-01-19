@@ -49,14 +49,7 @@ def get_travel_time(apiKey,origin,destination,mode_selected): # mode = walking, 
     # bus = 0.822 g per km per person
     # heavy rail = 1 kg per hour per person
     import requests
-    time = 0
-    carbon_footprint = 0
-    # url = ('https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origin={}&destination={}&mode={}&key={}'
-    #         #        .format(origin.replace(' ','+'),
-    #         #                destination.replace(' ','+'),mode,
-    #         #                str(apiKey)
-    #         #                )
-    #         #        )
+    
     url = ('https://maps.googleapis.com/maps/api/directions/json?units=imperial&origin={}&destination={}&mode={}&key={}'
         .format(origin.replace(' ','+'),
                 destination.replace(' ','+'),mode_selected,
