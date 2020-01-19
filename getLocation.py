@@ -1,5 +1,6 @@
 from __future__ import print_function
 import math
+import requests
 from quickstart import fetch_calendar
 from json_parse import json_write
 import datetime
@@ -9,23 +10,24 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
-
+os.chdir("/Users/varunbabbar/PycharmProjects/HackCambridge/HackCambridge/")
 apiKey = 'AIzaSyA1HfqmvNY_qRHR_aV1JxDDcXKlQMWxuAo'
 
-#emissions per second
-RAIL = 2
-METRO_RAIL = 3
-SUBWAY = 1
+#emissions per second (kg per km)
+RAIL = 2.8
+METRO_RAIL = 6.9
+SUBWAY = 4.5
 TRAM = 5
-MONORAIL = 1.5
-HEAVY_RAIL = 7
-COMMUTER_TRAIN = 2.3
-HIGH_SPEED_TRAIN = 4.1
-LONG_DISTANCE_TRAIN = 3.4
-BUS = 0.9
-INTERCITY_BUS = 0.8
-TROLLEYBUS = 10.1
-FERRY = 4.5
+MONORAIL = 5.4
+HEAVY_RAIL = 6.02
+COMMUTER_TRAIN = 6.5
+HIGH_SPEED_TRAIN = 6.5
+LONG_DISTANCE_TRAIN = 6.02
+BUS = 5.5
+INTERCITY_BUS = 6.9
+TROLLEYBUS = 4.2
+FERRY = 11.5
+DRIVING = 17
 
 def get_lat_lng(address):
 
@@ -43,13 +45,12 @@ def get_lat_lng(address):
         lng = 0
     return lat, lng
 
-def get_travel_time(apiKey,origin,destination,mode_selected): # mode = walking, driving, bicycling, transit
+def get_travel_time(apiKey,origin,destination,mode_selected):
     travel_mode_time = {}
     # car = 0.525 kg per hour per person
     # bus = 0.822 g per km per person
     # heavy rail = 1 kg per hour per person
-    import requests
-    
+
     url = ('https://maps.googleapis.com/maps/api/directions/json?units=imperial&origin={}&destination={}&mode={}&key={}'
         .format(origin.replace(' ','+'),
                 destination.replace(' ','+'),mode_selected,
@@ -60,7 +61,6 @@ def get_travel_time(apiKey,origin,destination,mode_selected): # mode = walking, 
         response = requests.get(url)
         resp_json_payload = response.json()
         step_list = resp_json_payload["routes"][0]["legs"][0]["steps"]
-          
         for step in step_list:
             duration = step["duration"]["value"]
             mode = step["travel_mode"]
@@ -74,14 +74,14 @@ def get_travel_time(apiKey,origin,destination,mode_selected): # mode = walking, 
         print('ERROR: {}, {}'.format(origin, destination))
     return travel_mode_time
 
-def leg_travel_time(location_list):
+def leg_travel_time(location_list,mode): # mode = walking, driving, bicycling, transit
     trips_today = {}
     for i in range(0,len(location_list)-1):
         origin_address = location_list[i]
         origin_lat,origin_lng = get_lat_lng(origin_address)
         destination_address = location_list[i+1]
         destination_lat,destination_lng = get_lat_lng(destination_address)
-        mode_time = get_travel_time(apiKey, origin_address, destination_address, mode_selected = 'transit')
+        mode_time = get_travel_time(apiKey, origin_address, destination_address, mode_selected = mode)
         trips_today[i+1] = {
             "origin": {
                 "addresss": origin_address,
@@ -96,7 +96,7 @@ def leg_travel_time(location_list):
             "mode_time": mode_time
         }
     return trips_today
-    
+
 
 def getCo2emissions(legs):
     for leg in legs:
@@ -115,6 +115,7 @@ def getCo2emissions(legs):
         intercitybustime = 0
         trolleybustime = 0
         ferrytime = 0
+        drivingtime = 0
         for i in list(mode_types.keys()):
             if i == 'RAIL':
                 railtime += mode_types[i]
@@ -142,6 +143,8 @@ def getCo2emissions(legs):
                 trolleybustime += mode_types[i]
             if i == 'FERRY':
                 ferrytime += mode_types[i]
+            if i == 'DRIVING':
+                drivingtime += mode_types[i]
         railco2 = railtime*RAIL
         meterorailco2 = meterorailtime*METRO_RAIL
         subwayco2 = subwaytime*SUBWAY
@@ -155,27 +158,84 @@ def getCo2emissions(legs):
         intercitybusco2 = intercitybustime*METRO_RAIL
         trolleybusco2 = trolleybustime*METRO_RAIL
         ferryco2 = ferrytime*METRO_RAIL
+        drivingco2 = drivingtime*DRIVING
         lol = {'RAIL':railco2, 'METRO_RAIL':meterorailco2, 'SUBWAY':subwayco2,'TRAM':tramco2,
                                   'MONORAIL':monorailco2,'HEAVY_RAIL':heavyrailco2,'COMMUTER_TRAIN':commuterrailco2,
                                   'HIGH_SPEED_TRAIN':highspeedtrainco2,'LONG_DISTANCE_TRAIN':longdistancetrainco2,'BUS':busco2,'INTERCITY_BUS':intercitybusco2,
-                                  'TROLLEYBUS':trolleybusco2,'FERRY':ferryco2,'WALKING':0,'CYCLING':0}
+                                  'TROLLEYBUS':trolleybusco2,'FERRY':ferryco2,'WALKING':0,'BICYCLING':0,'DRIVING':drivingco2}
         emissionsdict = {}
-        for i in legx["mode_time"]:
+        for i in mode_types:
             emissionsdict[i] = lol[i]
         legx['mode_emissions'] = emissionsdict
     # Get distance, time to between origin and destination
     return legs
-
-if __name__ == '__main__':
-    # get coordinates
+def efficiency_scorer():
     location_list = fetch_calendar()
     lat,lng = get_lat_lng(location_list[0])
-    print(lat,lng)
-    legs = getCo2emissions(leg_travel_time(location_list))
+    legs = getCo2emissions(leg_travel_time(location_list,'walking'))
+    try:
+        walktime = 0
+        for leg in legs:
+            walktime +=legs[leg]['mode_time']['WALKING']
+    except:
+        print("No Walking Route Found")
+        walktime = 10**6
+    legs = getCo2emissions(leg_travel_time(location_list,'driving'))
+    drivetime = 0
+    driveco2 = 0
     for leg in legs:
-        print(leg,legs[leg])
-    arr = fetch_calendar()
-    json_write(legs)
+        drivetime += legs[leg]['mode_time']['DRIVING']
+        driveco2 += legs[leg]['mode_emissions']['DRIVING']
+    legs = getCo2emissions(leg_travel_time(location_list,'bicycling'))
+    try:
+        cycletime = 0
+        for leg in legs:
+            cycletime += legs[leg]['mode_time']['BICYCLING']
+    except:
+        print("No Cycling Route Found")
+        cycletime = 10**6
+    legs = getCo2emissions(leg_travel_time(location_list,'transit'))
+    totaltime = 0
+    totalco2 = 0
+    for leg in legs:
+        mode_time = legs[leg]['mode_time']
+        for i in mode_time.keys():
+            totaltime += mode_time[i]
+            totalco2 += legs[leg]['mode_emissions'][i]
+    json_write(legs[1])
+
+    return walktime,drivetime,driveco2,cycletime,totaltime,totalco2
+
 
     # optimization_criteria = drive_time*carbon_footprint
+walktime,drivetime,driveco2,cycletime,totaltime,totalco2 = efficiency_scorer()
+if walktime != 10**6:
+    print("Total Time Spent if only Walking (hours) = " + str(walktime/3600))
+if cycletime != 10**6:
+    print("Total Time Spent if only Cycling (hours) = " + str(cycletime/3600))
+print("Total Time Spent if only Driving (hours) = " + str(drivetime/3600))
+print("Total CO2 emitted for only Driving (kg) = " + str(driveco2))
+print("")
+print("")
 
+print("Total Time Taken if transit option taken (hours) = " + str(totaltime/3600))
+print("Total CO2 Emitted if transit option taken (kg) = " + str(totalco2))
+
+print("")
+print("")
+print("")
+if walktime != 10**6:
+    print("Efficiency Metric for Only Walking: " + str(1000000000/(driveco2*walktime)))
+else:
+    print("Efficiency Metric for Only Walking: 0")
+if cycletime != 10**6:
+    print("Efficiency Metric for Only Cycling: " + str(1000000000/(driveco2*cycletime)))
+else:
+    print("Efficiency Metric for Only Cycling: 0")
+
+
+print("Efficiency Metric for Only Driving: " + str(1000000000/(driveco2*drivetime)))
+if totalco2 != 0:
+    print("Efficiency Metric for Transit: " + str(1000000000/(totaltime*totalco2)))
+else:
+    print("Efficiency Metric for Transit: " + str(1000000000/(totaltime*driveco2)))
