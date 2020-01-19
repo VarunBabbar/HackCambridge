@@ -158,8 +158,10 @@ def getCo2emissions(legs):
         lol = {'RAIL':railco2, 'METRO_RAIL':meterorailco2, 'SUBWAY':subwayco2,'TRAM':tramco2,
                                   'MONORAIL':monorailco2,'HEAVY_RAIL':heavyrailco2,'COMMUTER_TRAIN':commuterrailco2,
                                   'HIGH_SPEED_TRAIN':highspeedtrainco2,'LONG_DISTANCE_TRAIN':longdistancetrainco2,'BUS':busco2,'INTERCITY_BUS':intercitybusco2,
-                                  'TROLLEYBUS':trolleybusco2,'FERRY':ferryco2}
-        emissionsdict = {key:val for key,val in lol.items() if val !=0}
+                                  'TROLLEYBUS':trolleybusco2,'FERRY':ferryco2,'WALKING':0,'CYCLING':0}
+        emissionsdict = {}
+        for i in legx["mode_time"]:
+            emissionsdict[i] = lol[i]
         legx['mode_emissions'] = emissionsdict
     # Get distance, time to between origin and destination
     return legs
