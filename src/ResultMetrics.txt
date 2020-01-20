@@ -1,0 +1,38 @@
+Leg1 Mode = walking{'origin': {'addresss': 'Ballare, Lion Yard, Heidelburg Gardens, Cambridge CB2 3NA, UK', 'lat': 52.2049505, 'lng': 0.1212461}, 'destination': {'address': 'Northampton, UK', 'lat': 52.240477, 'lng': -0.9026560000000001}, 'mode_time': {'WALKING': 59148}, 'mode_emissions': {'WALKING': 0}, 'efficiency': 1.690674240887266}
+Leg2 Mode = walking{'origin': {'addresss': 'Northampton, UK', 'lat': 52.240477, 'lng': -0.9026560000000001}, 'destination': {'address': 'Essex Road, Essex Rd, Islington, London N1, UK', 'lat': 51.54144609999999, 'lng': -0.0942978}, 'mode_time': {'WALKING': 78085}, 'mode_emissions': {'WALKING': 0}, 'efficiency': 1.2806556957162067}
+Leg1 Mode = driving{'origin': {'addresss': 'Ballare, Lion Yard, Heidelburg Gardens, Cambridge CB2 3NA, UK', 'lat': 52.2049505, 'lng': 0.1212461}, 'destination': {'address': 'Northampton, UK', 'lat': 52.240477, 'lng': -0.9026560000000001}, 'mode_time': {'DRIVING': 4700}, 'mode_emissions': {'DRIVING': 79900}, 'efficiency': 2.6629030969563017}
+Leg2 Mode = driving{'origin': {'addresss': 'Northampton, UK', 'lat': 52.240477, 'lng': -0.9026560000000001}, 'destination': {'address': 'Essex Road, Essex Rd, Islington, London N1, UK', 'lat': 51.54144609999999, 'lng': -0.0942978}, 'mode_time': {'DRIVING': 6039}, 'mode_emissions': {'DRIVING': 102663}, 'efficiency': 1.6129504254186586}
+Leg1 Mode = bicycling{'origin': {'addresss': 'Ballare, Lion Yard, Heidelburg Gardens, Cambridge CB2 3NA, UK', 'lat': 52.2049505, 'lng': 0.1212461}, 'destination': {'address': 'Northampton, UK', 'lat': 52.240477, 'lng': -0.9026560000000001}, 'mode_time': {'BICYCLING': 16622}, 'mode_emissions': {'BICYCLING': 0}, 'efficiency': 6.016123210203345}
+Leg2 Mode = bicycling{'origin': {'addresss': 'Northampton, UK', 'lat': 52.240477, 'lng': -0.9026560000000001}, 'destination': {'address': 'Essex Road, Essex Rd, Islington, London N1, UK', 'lat': 51.54144609999999, 'lng': -0.0942978}, 'mode_time': {'BICYCLING': 25712}, 'mode_emissions': {'BICYCLING': 0}, 'efficiency': 3.8892345986309893}
+Leg1 Mode = transit{'origin': {'addresss': 'Ballare, Lion Yard, Heidelburg Gardens, Cambridge CB2 3NA, UK', 'lat': 52.2049505, 'lng': 0.1212461}, 'destination': {'address': 'Northampton, UK', 'lat': 52.240477, 'lng': -0.9026560000000001}, 'mode_time': {'WALKING': 861, 'BUS': 600, 'HEAVY_RAIL': 6840, 'SUBWAY': 60}, 'mode_emissions': {'WALKING': 0, 'BUS': 4140.0, 'HEAVY_RAIL': 47196.0, 'SUBWAY': 270.0}, 'efficiency': 2.317616523489648}
+Leg2 Mode = transit{'origin': {'addresss': 'Northampton, UK', 'lat': 52.240477, 'lng': -0.9026560000000001}, 'destination': {'address': 'Essex Road, Essex Rd, Islington, London N1, UK', 'lat': 51.54144609999999, 'lng': -0.0942978}, 'mode_time': {'HEAVY_RAIL': 3180, 'WALKING': 446, 'BUS': 1080}, 'mode_emissions': {'HEAVY_RAIL': 21942.0, 'WALKING': 0, 'BUS': 7452.0}, 'efficiency': 7.229185807743389}
+
+================================================================================================================
+
+Total Time Spent if only Walking (hours) = 38.12027777777778
+
+Total Time Spent if only Cycling (hours) = 11.759444444444444
+
+================================================================================================================
+
+Total Time Spent if only Driving (hours) = 2.9830555555555556
+
+Total CO2 emitted for only Driving (kg) = 182563
+
+================================================================================================================
+
+Total Time Taken if transit option taken (hours) = 3.629722222222222
+
+Total CO2 Emitted if transit option taken (hours) = 81000.0
+
+================================================================================================================
+
+Efficiency Metric for Only Walking:0.03991431485622535
+
+Efficiency Metric for Only Cycling: 0.12938917113110912
+
+Efficiency Metric for Only Driving: 0.510062498432291
+
+Efficiency Metric for Transit: 0.9447982713970826
+
+================================================================================================================

@@ -20,10 +20,10 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
                 data = json.load(json_file)
             self.respond(data)
         except ValueError as ex:
-            logging.error('unable to parse value: %s' % num)
+            logging.error('unable to parse value: %s' % numbers)
             self.respond(-1)
 
-    def respond(self, sumTotal):
+    def respond(self, data):
         # Send response status code
         self.send_response(200)
 
@@ -33,9 +33,9 @@ class MyHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
 
         # Send message back to client
-        message = str(sumTotal)
+        message = data
         # Write content as utf-8 data
-        self.wfile.write(bytes(message, 'utf8'))
+        self.wfile.write(str(message))
         return
 
 def main():

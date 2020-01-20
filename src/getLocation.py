@@ -11,6 +11,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
 apiKey = 'AIzaSyA1HfqmvNY_qRHR_aV1JxDDcXKlQMWxuAo'
+f = open('ResultMetrics.txt',"w+")
 
 #emissions per second (kg per km)
 RAIL = 2.8
@@ -97,7 +98,7 @@ def leg_travel_time(location_list,mode): # mode = walking, driving, bicycling, t
     return trips_today
 
 
-def getCo2emissions(legs):
+def getCo2emissions(legs,mode):
     for leg in legs:
         legx = legs[leg]
         mode_types = legx['mode_time']
@@ -115,6 +116,8 @@ def getCo2emissions(legs):
         trolleybustime = 0
         ferrytime = 0
         drivingtime = 0
+        walktime = 0
+        bicyclingtime = 0
         for i in list(mode_types.keys()):
             if i == 'RAIL':
                 railtime += mode_types[i]
@@ -144,6 +147,10 @@ def getCo2emissions(legs):
                 ferrytime += mode_types[i]
             if i == 'DRIVING':
                 drivingtime += mode_types[i]
+            if i == 'BICYCLING':
+                bicyclingtime += mode_types[i]
+            if i == 'WALKING':
+                bicyclingtime += mode_types[i]
         railco2 = railtime*RAIL
         meterorailco2 = meterorailtime*METRO_RAIL
         subwayco2 = subwaytime*SUBWAY
@@ -166,12 +173,29 @@ def getCo2emissions(legs):
         for i in mode_types:
             emissionsdict[i] = lol[i]
         legx['mode_emissions'] = emissionsdict
+        print((railtime + meterorailtime+subwaytime+tramtime+monorailtime+heavyrailtime+commutertraintime+highspeedtraintime +
+               longdistancetraintime+bustime+intercitybustime+trolleybustime+ferrytime+drivingtime + walktime + bicyclingtime))
+        if (railco2+meterorailco2+subwayco2+tramco2+monorailco2+heavyrailco2+commuterrailco2+highspeedtrainco2+longdistancetrainco2+
+              busco2+intercitybusco2+trolleybusco2+ferryco2+drivingco2) == 0:
+            if (railtime + meterorailtime+subwaytime+tramtime+monorailtime+heavyrailtime+commutertraintime+highspeedtraintime +
+                longdistancetraintime+bustime+intercitybustime+trolleybustime+ferrytime+drivingtime + walktime + bicyclingtime) == 0:
+                legx['efficiency'] = "Undefined"
+            else:
+                legx['efficiency'] = 1000000000 / ((railtime + meterorailtime+subwaytime+tramtime+monorailtime+heavyrailtime+commutertraintime+highspeedtraintime +
+                                                   longdistancetraintime+bustime+intercitybustime+trolleybustime+ferrytime+drivingtime + walktime + bicyclingtime)*10000)
+        else:
+            legx['efficiency'] = 1000000000/((railtime + meterorailtime+subwaytime+tramtime+monorailtime+heavyrailtime+commutertraintime+highspeedtraintime +
+                                              longdistancetraintime+bustime+intercitybustime+trolleybustime+ferrytime+drivingtime + walktime + bicyclingtime)
+                                             *(railco2+meterorailco2+subwayco2+tramco2+monorailco2+heavyrailco2+commuterrailco2+highspeedtrainco2+longdistancetrainco2+
+                                               busco2+intercitybusco2+trolleybusco2+ferryco2+drivingco2))
+        f.write("Leg" + str(leg) + " Mode = " + str(mode) + str(legx) + '\r\n')
     # Get distance, time to between origin and destination
+    # print(legs)
     return legs
 def efficiency_scorer():
     location_list = fetch_calendar()
     lat,lng = get_lat_lng(location_list[0])
-    legs = getCo2emissions(leg_travel_time(location_list,'walking'))
+    legs = getCo2emissions(leg_travel_time(location_list,'walking'),'walking')
     try:
         walktime = 0
         for leg in legs:
@@ -179,13 +203,13 @@ def efficiency_scorer():
     except:
         print("No Walking Route Found")
         walktime = 10**6
-    legs = getCo2emissions(leg_travel_time(location_list,'driving'))
+    legs = getCo2emissions(leg_travel_time(location_list,'driving'),'driving')
     drivetime = 0
     driveco2 = 0
     for leg in legs:
         drivetime += legs[leg]['mode_time']['DRIVING']
         driveco2 += legs[leg]['mode_emissions']['DRIVING']
-    legs = getCo2emissions(leg_travel_time(location_list,'bicycling'))
+    legs = getCo2emissions(leg_travel_time(location_list,'bicycling'),'bicycling')
     try:
         cycletime = 0
         for leg in legs:
@@ -193,7 +217,7 @@ def efficiency_scorer():
     except:
         print("No Cycling Route Found")
         cycletime = 10**6
-    legs = getCo2emissions(leg_travel_time(location_list,'transit'))
+    legs = getCo2emissions(leg_travel_time(location_list,'transit'),'transit')
     totaltime = 0
     totalco2 = 0
     for leg in legs:
@@ -205,52 +229,71 @@ def efficiency_scorer():
 
     return walktime,drivetime,driveco2,cycletime,totaltime,totalco2
 
-f = open('ResultMetrics.txt',"w+")
     # optimization_criteria = drive_time*carbon_footprint
 walktime,drivetime,driveco2,cycletime,totaltime,totalco2 = efficiency_scorer()
+
+f.write('\r\n')
+f.write('================================================================================================================\r\n')
+
+f.write('\r\n')
 if walktime != 10**6:
     print("Total Time Spent if only Walking (hours) = " + str(walktime/3600))
     f.write("Total Time Spent if only Walking (hours) = " + str(walktime/3600)+ '\r\n')
+    f.write('\r\n')
 if cycletime != 10**6:
     print("Total Time Spent if only Cycling (hours) = " + str(cycletime/3600))
     f.write("Total Time Spent if only Cycling (hours) = " + str(cycletime/3600)+ '\r\n')
+    f.write('\r\n')
+f.write('================================================================================================================\r\n')
+
+f.write('\r\n')
 print("Total Time Spent if only Driving (hours) = " + str(drivetime/3600))
 f.write("Total Time Spent if only Driving (hours) = " + str(drivetime/3600)+ '\r\n')
+
+f.write('\r\n')
 print("Total CO2 emitted for only Driving (kg) = " + str(driveco2))
 f.write("Total CO2 emitted for only Driving (kg) = " + str(driveco2) + '\r\n')
-f.write("")
-f.write("")
 
-print("")
-print("")
+f.write('\r\n')
+f.write('================================================================================================================\r\n')
 
+f.write('\r\n')
 print("Total Time Taken if transit option taken (hours) = " + str(totaltime/3600))
 f.write("Total Time Taken if transit option taken (hours) = " + str(totaltime/3600)+ '\r\n')
+f.write('\r\n')
 print("Total CO2 Emitted if transit option taken (kg) = " + str(totalco2))
 f.write("Total CO2 Emitted if transit option taken (hours) = " + str(totalco2)+ '\r\n')
-f.write("")
-f.write("")
-f.write("")
-print("")
-print("")
-print("")
+f.write('\r\n')
+
+f.write('================================================================================================================\r\n')
+
+f.write('\r\n')
 if walktime != 10**6:
     print("Efficiency Metric for Only Walking: " + str(1000000000/(driveco2*walktime)))
     f.write("Efficiency Metric for Only Walking:" + str(1000000000/(driveco2*walktime)) + '\r\n')
+    f.write('\r\n')
 else:
     print("Efficiency Metric for Only Walking: 0")
     f.write("Efficiency Metric for Only Walking: 0")
+    f.write('\r\n')
+    f.write('\r\n')
 if cycletime != 10**6:
     f.write("Efficiency Metric for Only Cycling: " + str(1000000000/(driveco2*cycletime))+ '\r\n')
+    f.write('\r\n')
 else:
     print("Efficiency Metric for Only Cycling: 0")
     f.write("Efficiency Metric for Only Cycling: 0")
+    f.write('\r\n')
 
 print("Efficiency Metric for Only Driving: " + str(1000000000/(driveco2*drivetime)))
 f.write("Efficiency Metric for Only Driving: " + str(1000000000/(driveco2*drivetime))+ '\r\n')
+f.write('\r\n')
 if totalco2 != 0:
     print("Efficiency Metric for Transit: " + str(1000000000/(totaltime*totalco2)))
     f.write("Efficiency Metric for Transit: " + str(1000000000/(totaltime*totalco2))+ '\r\n')
+    f.write('\r\n')
 else:
     print("Efficiency Metric for Transit: " + str(1000000000/(totaltime*driveco2)))
     f.write("Efficiency Metric for Transit: " + str(1000000000/(totaltime*driveco2))+ '\r\n')
+    f.write('\r\n')
+f.write('================================================================================================================\r\n')

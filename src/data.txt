@@ -1,0 +1,25 @@
+{
+    "origin": {
+        "addresss": "Ballare, Lion Yard, Heidelburg Gardens, Cambridge CB2 3NA, UK",
+        "lat": 52.2049505,
+        "lng": 0.1212461
+    },
+    "destination": {
+        "address": "Northampton, UK",
+        "lat": 52.240477,
+        "lng": -0.9026560000000001
+    },
+    "mode_time": {
+        "WALKING": 861,
+        "BUS": 600,
+        "HEAVY_RAIL": 6840,
+        "SUBWAY": 60
+    },
+    "mode_emissions": {
+        "WALKING": 0,
+        "BUS": 4140.0,
+        "HEAVY_RAIL": 47196.0,
+        "SUBWAY": 270.0
+    },
+    "efficiency": 2.317616523489648
+}
